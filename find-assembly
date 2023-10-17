@@ -1,0 +1,53 @@
+#!/bin/bash
+## Use this script to check what assemblies a module is included in and return the parent assembly required for the module.
+## ./find-assembly.sh <filename.adoc> 
+## Update the directory varialbe to suit your environment
+
+search_files() {
+    text_to_search="$1"
+    directory="$2"
+    found_files=()
+    for file in $(find "$directory" -name "*.adoc"); do
+        if [ -f "$file" ]; then
+            content=$(<$file)
+            if [[ $content == *"$text_to_search"* ]]; then
+                found_files+=("$file")
+            fi
+        fi
+    done
+    printf '%s\n' "${found_files[@]}"
+}
+
+generate_template() {
+    file_paths=("$@")
+    template="// Module included in the following assemblies:\n\n"
+    for path in "${file_paths[@]}"; do
+        relative_path=$(echo "$path" | awk -F 'openshift-docs/' '{print $2}')
+        template+="// *${relative_path}\n"
+    done
+    printf '%s\n' "$template"
+}
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: ./myscript.sh <filename.adoc>"
+    exit 1
+fi
+
+## Update the directory to suit your needs.
+directory="/home/rohennes/openshift-docs"
+filename="$1"
+
+found_files=($(search_files "$filename" "$directory"))
+
+if [ ${#found_files[@]} -gt 0 ]; then
+    echo "Found ${filename} in the following .adoc files:"
+    for file_path in "${found_files[@]}"; do
+        echo "$file_path"
+    done
+
+    template=$(generate_template "${found_files[@]}")
+    echo -e "\nGenerated Template:"
+    echo -e "$template"
+else
+    echo "No matches found in .adoc files for '${filename}'"
+fi
