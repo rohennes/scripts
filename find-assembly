@@ -9,10 +9,12 @@ search_files() {
     found_files=()
     for file in $(find "$directory" -name "*.adoc"); do
         if [ -f "$file" ]; then
-            content=$(<$file)
-            if [[ $content == *"$text_to_search"* ]]; then
-                found_files+=("$file")
-            fi
+            while IFS= read -r line; do
+                if [[ "$line" =~ ^include.*"$text_to_search" ]]; then
+                    found_files+=("$file")
+                    break
+                fi
+            done <"$file"
         fi
     done
     printf '%s\n' "${found_files[@]}"
