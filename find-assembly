@@ -7,7 +7,7 @@ search_files() {
     text_to_search="$1"
     directory="$2"
     found_files=()
-    for file in $(find "$directory" -name "*.adoc"); do
+    for file in $(find "$directory" -name "*.adoc" -not -path '*_preview*' -not -path '*/drupal-build/*' -not -path '*/rest_api/*' -not -path '*/scripts/*'); do
         if [ -f "$file" ]; then
             while IFS= read -r line; do
                 if [[ "$line" =~ ^include.*"$text_to_search" ]]; then
