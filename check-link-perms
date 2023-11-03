@@ -1,0 +1,27 @@
+#!/bin/bash
+# Update the links address as required. This finds links that start with "http"
+
+# Scrape all links from the webpage
+links=$(curl -s https://docs.openshift.com/container-platform/4.14/release_notes/ocp-4-14-release-notes.html | grep -o 'href="http[^"]*"' | sed 's/href="//' | sed 's/"//')
+protected_links=()
+
+# Iterate over the links and check their authorization status
+for link in $links
+do
+    response=$(curl -I "$link" 2>&1)
+
+    if echo "$response" | grep -q "permissionViolation"; then
+        echo "The link $link requires authentication."
+        protected_links+=("$link")
+    else
+        echo "The link $link does not require authentication."
+    fi
+done
+
+# Print the list of links that require authentication
+if [ ${#protected_links[@]} -eq 0 ]; then
+    echo "No links require authentication."
+else
+    echo "Links that require authentication:"
+    printf '%s\n' "${protected_links[@]}"
+fi
