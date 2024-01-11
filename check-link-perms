@@ -1,8 +1,22 @@
 #!/bin/bash
 # Update the links address as required. This finds links that start with "http"
 
+# Get the enterprise branch
+PR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+REPO_PATH="$(git rev-parse --show-toplevel)"
+
 # Scrape all links from the webpage
-links=$(curl -s https://docs.openshift.com/container-platform/4.14/release_notes/ocp-4-14-release-notes.html | grep -o 'href="http[^"]*"' | sed 's/href="//' | sed 's/"//')
+#links=$(curl -s https://docs.openshift.com/container-platform/4.14/release_notes/ocp-4-14-release-notes.html | grep -o 'href="http[^"]*"' | sed 's/href="//' | sed 's/"//')
+#protected_links=()
+
+# Read the content from the local file
+content=$(cat "$REPO_PATH/release_notes/ocp-4-14-release-notes.adoc")
+echo "$REPO_PATH/release_notes/ocp-4-14-release-notes.adoc"
+#echo "Content:"
+#echo "$content"
+
+# Extract links from the content
+links=$(echo "$content" | grep -o 'https://issues[^]]*' | sed 's/\[.*//')
 protected_links=()
 
 # Iterate over the links and check their authorization status
@@ -21,7 +35,9 @@ done
 # Print the list of links that require authentication
 if [ ${#protected_links[@]} -eq 0 ]; then
     echo "No links require authentication."
+    exit 0
 else
     echo "Links that require authentication:"
     printf '%s\n' "${protected_links[@]}"
+    exit 1
 fi
