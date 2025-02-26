@@ -7,3 +7,5 @@
 * `check-vale-repos.sh`:  Checks for presence of `.vale.ini` at root of default branch for gitlab repos used by Pantheon
 
 * `find-mismatched-titles.py`: Check if hardcoded references to titles are present as headings anywhere in the repo.
+
+* `check_adoc_headings.py`: Check discrepencies between topic_map headings and .adoc titles.
