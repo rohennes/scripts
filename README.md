@@ -9,3 +9,5 @@
 * `find-mismatched-titles.py`: Check if hardcoded references to titles are present as headings anywhere in the repo.
 
 * `check_adoc_headings.py`: Check discrepencies between topic_map headings and .adoc titles.
+
+* `create-xref-from-drh.py`: Input a link from DRH, the script generates some kind of xref that eases the pain.
