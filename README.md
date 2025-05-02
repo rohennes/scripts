@@ -11,3 +11,5 @@
 * `check_adoc_headings.py`: Check discrepencies between topic_map headings and .adoc titles.
 
 * `create-xref-from-drh.py`: Input a link from DRH, the script generates some kind of xref that eases the pain.
+
+* `bug-compare.sh`: Looks at local release notes file, scrapes all bug IDs, compares with a JIRA query for a component. Not complete.

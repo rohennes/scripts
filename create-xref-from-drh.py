@@ -5,10 +5,30 @@ You can run the script from the command line as follows:
 python create-xref-from-drh.py
 Make sure to replace <enter_full_path_to_openshift-docs_repo_here> with the actual path to your OpenShift documentation repository.
 """
+
 import os
 import re
 import sys
 from pathlib import Path
+
+"""
+Scrapthpad for testing the script - ignore
+--------------assembly/assembly
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/image-based-upgrade-for-single-node-openshift-clusters#cnf-understanding-image-based-upgrade
+
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/image-based-upgrade-for-single-node-openshift-clusters#cnf-image-based-upgrade-shared-container-partition_shared-container-partition
+
+* xref:../../edge_computing/image_base_install/ibi-preparing-for-image-based-install.adoc#cnf-image-based-upgrade-shared-container-partition_ibi-preparing-image-based-install[Configuring a shared container partition between ostree stateroots]
+
+--------------assembly/module
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/ztp-updating-gitops
+
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/ztp-updating-gitops#ztp-preparing-for-the-gitops-ztp-upgrade_ztp-updating-gitops
+
+--------------assembly/module_context
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/ztp-preparing-the-hub-cluster#ztp-configuring-the-cluster-for-a-disconnected-environment_ztp-preparing-the-hub-cluster
+
+"""
 
 def find_adoc_file_with_id(root_dir, anchor_id):
     """Search for the .adoc file that contains the given anchor ID."""
@@ -78,7 +98,9 @@ def convert_link_to_xref(link, root_dir):
         first_adoc_file = find_adoc_file_with_id(root_dir, first_slug)
         if first_adoc_file:
             print(f"Found .adoc file: {first_adoc_file}")
+            #print(f"First slug: {first_slug}")
             relative_path = get_relative_path(first_adoc_file, root_dir)
+            
             return f"xref:../{relative_path}#{first_slug}[]"
         else:
             print(f"Could not find .adoc file for first slug: {first_slug}. This is probably a slug created from the title and doesn't correspond to any assembly ID... I'm afraid you'll have to go on without my help... :(")
@@ -86,7 +108,7 @@ def convert_link_to_xref(link, root_dir):
     elif link_format == "assembly/module_context":
         # Assembly/Module Context format
         context_assembly_id = match_groups[3]
-        #print(f"Context assembly ID: {context_assembly_id}")
+        print(f"Context assembly ID: {context_assembly_id}")
         first_adoc_file = find_adoc_file_with_id(root_dir, first_slug)
         if first_adoc_file:
             print(f"Found .adoc file: {first_adoc_file}")
@@ -99,7 +121,7 @@ def convert_link_to_xref(link, root_dir):
 if __name__ == "__main__":
     # Ask the user for the link and repo root directory
     url = input("Please enter the full link of the page from docs.redhat.com (e.g. https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/cnf-talm-for-cluster-updates): ")
-    repo_root = "<enter_full_path_to_openshift-docs_repo_here>"  # e.g. /home/user/openshift-docs/
+    repo_root = "/home/rohennes/openshift-docs/"
 
     # Ensure the root directory exists
     if not os.path.isdir(repo_root):
@@ -112,6 +134,6 @@ if __name__ == "__main__":
         print("--------------------------------------------------")
         print(xref)
         print("--------------------------------------------------")
-        print("Please double-check the xref before publishing.")
+        print("Please double-check the xref, this script is just to ease the pain!")
         print("Also, the climbing path ../ is not accouted for in the generated xref so you may need to change that according to the depth of the file in the repo.")
         print("Oh, and one last thing, you'll have to enter in the human-readable label yourself.")
